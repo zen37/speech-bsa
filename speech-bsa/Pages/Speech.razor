@@ -8,25 +8,43 @@
     <h4 class="card-title text-primary mb-3 ml-3">text</h4>
 
     <div class="col-10">
-        <textarea @bind="script" placeholder="I will be back" rows="4" cols="50"></textarea>
+        <textarea @bind="text" placeholder="I will be back" rows="4" cols="50"></textarea>
     </div>
     <div>
         <p>
-            <button class="btn btn-primary" @onclick="speak">speak</button>
+            <button class="btn btn-primary" @onclick="speakText">speak</button>
+        </p>
+    </div>
+</div>
+<div class="row my-2">
+    <h4 class="card-title text-primary mb-3 ml-3">ssml</h4>
+
+    <div class="col-10">
+        <textarea @bind="ssml" placeholder="I will be back" rows="8" cols="100"></textarea>
+    </div>
+    <div>
+        <p>
+            <button class="btn btn-primary" @onclick="speakSSML">speak</button>
         </p>
     </div>
 </div>
 
 
 @code {
-    private string script = "I will be back";
+    private string text = "I will be back";
+    private string ssml;
 
-    private async Task speak()
+    private async Task speakText()
     {
-        await  Audio();
+        await  Audio("text");
     }
 
-    private async Task Audio()
+    private async Task speakSSML()
+    {
+        await Audio("ssml");
+    }
+
+    private async Task Audio(string typeInput)
     {
 
         string speechKey = configuration["AzureSpeechService:key"];
@@ -40,12 +58,12 @@
         using (var speechSynthesizer = new SpeechSynthesizer(speechConfig))
         {
 
-            var speechSynthesisResult = await speechSynthesizer.SpeakTextAsync(script);
+            var speechSynthesisResult = await (typeInput == "text" ? speechSynthesizer.SpeakTextAsync(text) : speechSynthesizer.SpeakSsmlAsync(ssml));
 
             switch (speechSynthesisResult.Reason)
             {
                 case ResultReason.SynthesizingAudioCompleted:
-                    Console.WriteLine($"Speech synthesized for text: [{script}]");
+                    Console.WriteLine($"Speech synthesized for text: [{text}]");
                     break;
                 case ResultReason.Canceled:
                     var cancellation = SpeechSynthesisCancellationDetails.FromResult(speechSynthesisResult);
