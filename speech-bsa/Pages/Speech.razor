@@ -24,7 +24,11 @@
    
     private async Task speak()
     {
-        //    await Audio();
+        await  Audio();
+    }
+
+    private async Task Audio()
+    {
 
         string speechKey = configuration["AzureSpeechService:key"];
         string speechRegion = configuration["AzureSpeechService:region"];
@@ -33,12 +37,8 @@
 
         using (var speechSynthesizer = new SpeechSynthesizer(speechConfig))
         {
-            // Get text from the console and synthesize to the default speaker.
-            //Console.WriteLine("Enter some text that you want to speak >");
-         //   string text = "Enter some text that you want to speak";
 
             var speechSynthesisResult = await speechSynthesizer.SpeakTextAsync(script);
-            //   OutputSpeechSynthesisResult(speechSynthesisResult, text);
 
             switch (speechSynthesisResult.Reason)
             {
@@ -61,13 +61,4 @@
             }
         }
     }
-
-    static async Task Audio()
-    {
-
-
-
-    }
-
-
 } 
