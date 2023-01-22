@@ -5,10 +5,10 @@
 @inject IConfiguration configuration;
 
 <div class="row my-2">
-    <h3 class="card-title text-primary mb-3 ml-3">Text to Speech</h3>
+    <h4 class="card-title text-primary mb-3 ml-3">text</h4>
 
     <div class="col-10">
-        <textarea @bind="script" placeholder="lines" rows="4" cols="50"></textarea>
+        <textarea @bind="script" placeholder="I will be back" rows="4" cols="50"></textarea>
     </div>
     <div>
         <p>
@@ -19,9 +19,8 @@
 
 
 @code {
+    private string script = "I will be back";
 
-    private string script;
-   
     private async Task speak()
     {
         await  Audio();
@@ -34,6 +33,9 @@
         string speechRegion = configuration["AzureSpeechService:region"];
 
         var speechConfig = SpeechConfig.FromSubscription(speechKey, speechRegion);
+
+        // language of the voice that speaks.
+        speechConfig.SpeechSynthesisVoiceName = "en-US-DavisNeural";
 
         using (var speechSynthesizer = new SpeechSynthesizer(speechConfig))
         {
