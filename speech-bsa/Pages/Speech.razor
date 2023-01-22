@@ -1,0 +1,73 @@
+﻿@page "/speech"
+@using Microsoft.CognitiveServices.Speech;
+@using Microsoft.CognitiveServices.Speech.Audio;
+
+@inject IConfiguration configuration;
+
+<div class="row my-2">
+    <h3 class="card-title text-primary mb-3 ml-3">Text to Speech</h3>
+
+    <div class="col-10">
+        <textarea @bind="script" placeholder="lines" rows="4" cols="50"></textarea>
+    </div>
+    <div>
+        <p>
+            <button class="btn btn-primary" @onclick="speak">speak</button>
+        </p>
+    </div>
+</div>
+
+
+@code {
+
+    private string script;
+   
+    private async Task speak()
+    {
+        //    await Audio();
+
+        string speechKey = configuration["AzureSpeechService:key"];
+        string speechRegion = configuration["AzureSpeechService:region"];
+
+        var speechConfig = SpeechConfig.FromSubscription(speechKey, speechRegion);
+
+        using (var speechSynthesizer = new SpeechSynthesizer(speechConfig))
+        {
+            // Get text from the console and synthesize to the default speaker.
+            //Console.WriteLine("Enter some text that you want to speak >");
+         //   string text = "Enter some text that you want to speak";
+
+            var speechSynthesisResult = await speechSynthesizer.SpeakTextAsync(script);
+            //   OutputSpeechSynthesisResult(speechSynthesisResult, text);
+
+            switch (speechSynthesisResult.Reason)
+            {
+                case ResultReason.SynthesizingAudioCompleted:
+                    Console.WriteLine($"Speech synthesized for text: [{script}]");
+                    break;
+                case ResultReason.Canceled:
+                    var cancellation = SpeechSynthesisCancellationDetails.FromResult(speechSynthesisResult);
+                    Console.WriteLine($"CANCELED: Reason={cancellation.Reason}");
+
+                    if (cancellation.Reason == CancellationReason.Error)
+                    {
+                        Console.WriteLine($"CANCELED: ErrorCode={cancellation.ErrorCode}");
+                        Console.WriteLine($"CANCELED: ErrorDetails=[{cancellation.ErrorDetails}]");
+                        Console.WriteLine($"CANCELED: Did you set the speech resource key and region values?");
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    static async Task Audio()
+    {
+
+
+
+    }
+
+
+} 
